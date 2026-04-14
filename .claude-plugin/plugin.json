@@ -1,0 +1,17 @@
+{
+  "name": "octo",
+  "version": "1.0.0",
+  "description": "Export and import Claude Code project environments with PII isolation — shed a tentacle without leaking knowledge",
+  "author": {
+    "name": "fwilip"
+  },
+  "license": "MIT",
+  "keywords": [
+    "export",
+    "import",
+    "pii",
+    "tenant-isolation",
+    "environment-clone",
+    "client-handoff"
+  ]
+}

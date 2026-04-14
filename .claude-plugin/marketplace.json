@@ -1,0 +1,26 @@
+{
+  "name": "octo",
+  "owner": {
+    "name": "fwilip"
+  },
+  "metadata": {
+    "description": "Export and import Claude Code project environments with PII isolation",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "octo",
+      "source": "./",
+      "description": "Tenant-isolated Claude Code environment export/import with PII scrubbing, plugin replication, and connection documentation",
+      "category": "devops",
+      "tags": [
+        "export",
+        "import",
+        "pii",
+        "isolation",
+        "handoff"
+      ]
+    }
+  ],
+  "version": "1.0.0"
+}
