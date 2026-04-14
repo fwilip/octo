@@ -104,9 +104,10 @@ PATTERNS = [
         "[PHONE_REDACTED]",
     ),
     # European landline/mobile with separators: 020 123 45 67, 06-12345678
+    # Require at least 9 digits total to avoid matching date fragments
     (
         "phone_eu",
-        re.compile(r"\b0\d{1,3}[\s.\-]\d{2,4}[\s.\-]\d{2,4}(?:[\s.\-]\d{2,4})?\b"),
+        re.compile(r"\b0\d{1,3}[\s.\-]\d{2,4}[\s.\-]\d{2,4}[\s.\-]\d{2,4}\b"),
         "[PHONE_REDACTED]",
     ),
 
@@ -172,10 +173,12 @@ PATTERNS = [
         re.compile(r"\b(?:\d{4}[\s-]?){3}\d{4}\b"),
         "[CC_REDACTED]",
     ),
-    # SWIFT/BIC code: 8 or 11 alphanumeric
+    # SWIFT/BIC code: only when labeled (bare 8-char uppercase words false-positive too often)
     (
         "swift",
-        re.compile(r"\b[A-Z]{6}[A-Z0-9]{2}(?:[A-Z0-9]{3})?\b"),
+        re.compile(
+            r"(?:SWIFT|BIC|swift|bic)[\s:=]*\b([A-Z]{6}[A-Z0-9]{2}(?:[A-Z0-9]{3})?)\b"
+        ),
         "[SWIFT_REDACTED]",
     ),
 
@@ -278,14 +281,6 @@ CONTEXTUAL_PATTERNS = [
     ),
 ]
 
-# Patterns that look like SWIFT codes but are common English words / acronyms
-SWIFT_ALLOWLIST = {
-    "EXAMPLES", "OVERVIEW", "COMPLETE", "INTERNAL", "EXTERNAL",
-    "OPTIONAL", "REQUIRED", "ABSTRACT", "FUNCTION", "TEMPLATE",
-    "MANIFEST", "INSTANCE", "FEATURES", "SETTINGS", "METADATA",
-    "PLANNING", "PATTERNS", "PIPELINE", "GENERATE", "ANALYSIS",
-    "COMMANDS", "CONTENTS", "BLOCKLIST",
-}
 
 
 def is_binary(filepath: Path) -> bool:
@@ -354,12 +349,6 @@ def should_skip_ip(text: str, match: re.Match) -> bool:
     return False
 
 
-def should_skip_swift(match: re.Match) -> bool:
-    """Skip SWIFT-like patterns that are common words."""
-    val = match.group()
-    return val.upper() in SWIFT_ALLOWLIST or val.upper() == val and len(val) > 8
-
-
 def scrub_text(
     text: str,
     filepath: str,
@@ -375,8 +364,6 @@ def scrub_text(
         for name, pattern, replacement in all_patterns:
             for match in pattern.finditer(modified):
                 if name == "ipv4" and should_skip_ip(text, match):
-                    continue
-                if name == "swift" and should_skip_swift(match):
                     continue
                 if name == "iban" and ("http" in modified or "sha" in modified.lower()):
                     continue
