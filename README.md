@@ -8,8 +8,11 @@ Octo packages a project's configuration, planning docs, memory, settings, hooks,
 
 ## Install
 
-```bash
-claude plugin add octo --marketplace fwilip
+Register the marketplace, then install:
+
+```
+/plugin marketplace add fwilip/octo
+/plugin install octo@octo
 ```
 
 ## Usage
